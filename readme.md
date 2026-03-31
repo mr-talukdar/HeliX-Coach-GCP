@@ -1,40 +1,46 @@
 # 🏋️‍♂️ HeliX Coach: Autonomous Multi-Agent Fitness Orchestrator
 
-**HeliX Coach** is a state-of-the-art, autonomous fitness management system built for the **Gen AI Academy APAC Edition**. It moves beyond static workout tracking by leveraging a multi-agent architecture that perceives user fatigue, manages persistent training blocks in **AlloyDB**, and autonomously executes real-world actions via the **Google Calendar API**.
-
-
+**HeliX Coach** is a state-of-the-art, autonomous fitness management system built for the **Gen AI Academy APAC Edition 2026**. Moving beyond static workout tracking, HeliX leverages a sophisticated multi-agent architecture to perceive user fatigue, manage persistent training blocks in **AlloyDB**, and autonomously execute real-world scheduling via the **Google Calendar API**.
 
 ## 🚀 Core Features
 
-* **Autonomous Orchestration:** Uses a central "Head Coach" agent to delegate tasks to specialized sub-agents (Routine Generator, Readiness Specialist, Schedule Specialist).
-* **Dynamic Auto-Regulation:** Calculates a "Readiness Score" to mutate prescribed workouts in real-time. If you're exhausted, HeliX automatically scales your intensity.
-* **Persistent State Memory:** Powered by **AlloyDB AI**, the system remembers your long-term goals and training history across every session using the PostgreSQL Python Connector.
-* **Actionable Integration:** Not just a chatbot—HeliX reads your live Google Calendar to find free slots and books your training sessions automatically.
+* **Autonomous Orchestration:** Features a central `leanx_coach` (Orchestrator) that intelligently delegates tasks to specialized sub-agents:
+    * **Routine Generator:** Designs long-term strength programming based on user goals.
+    * **Readiness Specialist:** Assesses fatigue and sleep data to scale intensity dynamically.
+    * **Schedule Specialist:** Manages calendar availability and automated event booking.
+* **Dynamic Auto-Regulation:** Calculates a "Readiness Score" to mutate prescribed workouts in real-time. If recovery is low, HeliX automatically triggers deload protocols to prevent injury.
+* **Persistent State Memory:** Powered by **AlloyDB AI**, the system maintains a "shared mental context" of user goals and historical training data across sessions using the PostgreSQL Python Connector.
+* **Actionable Tool-Use:** More than a chatbot—HeliX interacts directly with the **Google Calendar API** to identify busy blocks and autonomously book training sessions.
 
 ## 🛠️ The Tech Stack
 
 * **Framework:** Google Agent Development Kit (ADK)
 * **LLM:** Gemini 2.5 Flash (Vertex AI)
 * **Database:** AlloyDB for PostgreSQL
-* **Deployment:** Google Cloud Run (Containerized via Docker)
-* **APIs:** Google Calendar API v3
-* **Backend:** FastAPI & Uvicorn
+* **Deployment:** Google Cloud Run (Serverless/Containerized)
+* **Infrastructure:** Python 3.14+, FastAPI, & Uvicorn
+
+---
 
 ## 📂 Project Structure
 
 ```text
 HELIX-ORCHESTRATOR/
-├── helix_coach/          # Main Agent Logic
+├── helix_coach/          # Core Multi-Agent Logic
 │   ├── agent.py          # Orchestrator & Specialist Definitions
 │   ├── database.py       # AlloyDB Connection & CRUD Tools
-│   └── calendar_tools.py # Google Calendar API Integrations
+│   └── calendar_tools.py # Google Calendar API v3 Integrations
 ├── main.py               # Cloud Run Entry Point (FastAPI Wrapper)
-├── Procfile              # Cloud Run Startup Command
+├── Procfile              # Production Startup Command
 ├── requirements.txt      # Dependency Lockfile
 └── README.md             # Project Documentation
+```
+## 🌟 Why HeliX?
+Traditional fitness applications are rigid, leading to overtraining and plateaus. HeliX represents the first step toward a truly "Living" coach. By synthesizing the advanced reasoning of Gemini 2.5 Flash with the high-performance persistence of AlloyDB, HeliX provides the level of elite, adaptive personalization previously reserved for professional athletes. It doesn't just suggest—it executes.
 
+## Developer Information
+Author: Rahul Talukdar
 
-🌟 Why HeliX?
-Generic fitness apps are rigid and often lead to overtraining or injury. HeliX is the first step toward a truly "Living" coach. By combining the reasoning of Gemini 2.5 Flash with the persistent memory of AlloyDB, it provides a level of personalization previously only available through expensive human coaching.
+Project: Gen AI Academy APAC Edition 2026
 
-Developed by Rahul Talukdar for the Gen AI Academy 2026.
+Track: Agent Development / AlloyDB AI
