@@ -32,3 +32,9 @@ HELIX-ORCHESTRATOR/
 ├── Procfile              # Cloud Run Startup Command
 ├── requirements.txt      # Dependency Lockfile
 └── README.md             # Project Documentation
+
+
+🌟 Why HeliX?
+Generic fitness apps are rigid and often lead to overtraining or injury. HeliX is the first step toward a truly "Living" coach. By combining the reasoning of Gemini 2.5 Flash with the persistent memory of AlloyDB, it provides a level of personalization previously only available through expensive human coaching.
+
+Developed by Rahul Talukdar for the Gen AI Academy 2026.
