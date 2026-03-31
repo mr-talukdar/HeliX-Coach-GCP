@@ -2,7 +2,7 @@
 
 **HeliX Coach** is a state-of-the-art, autonomous fitness management system built for the **Gen AI Academy APAC Edition 2026**. Moving beyond static workout tracking, HeliX leverages a sophisticated multi-agent architecture to perceive user fatigue, manage persistent training blocks in **AlloyDB**, and autonomously execute real-world scheduling via the **Google Calendar API**.
 
-##Live at : https://helix-coach-app-252961914897.us-east4.run.app/
+## 🌐 Live at: [https://helix-coach-app-252961914897.us-east4.run.app/](https://helix-coach-app-252961914897.us-east4.run.app/)
 
 ## 🚀 Core Features
 
