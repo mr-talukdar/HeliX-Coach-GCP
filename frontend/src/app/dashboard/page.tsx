@@ -32,7 +32,6 @@ export default function DashboardPage() {
       <Sidebar />
       
       <main className="flex-1 p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column - Main Chat */}
         <div className="lg:col-span-2 flex flex-col h-[calc(100vh-4rem)]">
           <div className="mb-6">
             <h1 className="text-2xl font-bold tracking-tight mb-2">
@@ -48,7 +47,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Right Column - Widgets */}
         <div className="flex flex-col gap-6 h-[calc(100vh-4rem)]">
           <ReadinessGauge score={85} />
           <WeeklyCalendar />

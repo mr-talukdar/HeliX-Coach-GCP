@@ -22,8 +22,6 @@ import sqlalchemy
 
 logger = logging.getLogger(__name__)
 
-# OAuth Client Configuration
-# In production, these should come from Secret Manager
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET", "")
 OAUTH_REDIRECT_URI = os.environ.get("OAUTH_REDIRECT_URI", "http://localhost:8080/api/auth/callback")
@@ -71,7 +69,7 @@ def get_authorization_url(user_id: str) -> str:
     auth_url, _ = flow.authorization_url(
         access_type="offline",
         include_granted_scopes="true",
-        prompt="consent",  # Force consent to get refresh token
+        prompt="consent",
     )
     return auth_url
 

@@ -5,7 +5,6 @@ from google.cloud.alloydb.connector import Connector, IPTypes
 
 logger = logging.getLogger(__name__)
 
-# --- CONFIGURATION (no hardcoded secrets!) ---
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT")
 REGION = os.getenv("ALLOYDB_REGION", "us-east4")
 CLUSTER = os.getenv("ALLOYDB_CLUSTER", "helix-database")
@@ -16,12 +15,10 @@ DB_NAME = os.getenv("DB_NAME", "postgres")
 
 def _get_db_password() -> str:
     """Fetch DB password from environment or Google Secret Manager."""
-    # 1. Check environment variable first (for local dev / Cloud Run env injection)
     env_pass = os.environ.get("DB_PASS")
     if env_pass:
         return env_pass
 
-    # 2. Fall back to Google Secret Manager (production)
     try:
         from google.cloud import secretmanager
         client = secretmanager.SecretManagerServiceClient()
@@ -71,10 +68,8 @@ def init_pool_and_db():
         pool_pre_ping=True,
     )
 
-    # Create tables (fresh schema)
     logger.info("Executing table creation/check...")
     with pool.connect() as db_conn:
-        # Core user profile (linked to Firebase UID)
         db_conn.execute(sqlalchemy.text("""
             CREATE TABLE IF NOT EXISTS users (
                 user_id VARCHAR(128) PRIMARY KEY,
@@ -92,7 +87,6 @@ def init_pool_and_db():
             )
         """))
 
-        # OAuth tokens for Calendar access
         db_conn.execute(sqlalchemy.text("""
             CREATE TABLE IF NOT EXISTS user_tokens (
                 user_id VARCHAR(128) PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
@@ -104,7 +98,6 @@ def init_pool_and_db():
             )
         """))
 
-        # Weekly routine templates (versioned)
         db_conn.execute(sqlalchemy.text("""
             CREATE TABLE IF NOT EXISTS workout_routines (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -118,7 +111,6 @@ def init_pool_and_db():
             )
         """))
 
-        # Completed workout logs (history / PR tracking)
         db_conn.execute(sqlalchemy.text("""
             CREATE TABLE IF NOT EXISTS workout_logs (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -134,7 +126,6 @@ def init_pool_and_db():
             )
         """))
 
-        # Daily readiness tracking
         db_conn.execute(sqlalchemy.text("""
             CREATE TABLE IF NOT EXISTS readiness_logs (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -155,9 +146,6 @@ def init_pool_and_db():
     return pool
 
 
-# =============================================
-# ADK TOOLS — User Context
-# =============================================
 
 def save_user_context(user_id: str, email: str, display_name: str, goal: str) -> str:
     """Saves or updates a user's profile and fitness goal in the database.
@@ -219,9 +207,6 @@ def get_user_context(user_id: str) -> str:
         return error_msg
 
 
-# =============================================
-# ADK TOOLS — Workout Routines
-# =============================================
 
 def save_daily_workout(user_id: str, day: str, workout_text: str) -> str:
     """Saves a generated workout routine for a specific day of the week to the database.
@@ -234,7 +219,6 @@ def save_daily_workout(user_id: str, day: str, workout_text: str) -> str:
     try:
         db_pool = init_pool_and_db()
         with db_pool.connect() as db_conn:
-            # Deactivate previous routines for this day
             db_conn.execute(
                 sqlalchemy.text("""
                     UPDATE workout_routines SET is_active = FALSE
@@ -242,7 +226,6 @@ def save_daily_workout(user_id: str, day: str, workout_text: str) -> str:
                 """),
                 {"user_id": user_id, "day": day.lower()}
             )
-            # Get the next version number
             version_result = db_conn.execute(
                 sqlalchemy.text("""
                     SELECT COALESCE(MAX(version), 0) + 1 FROM workout_routines
@@ -252,7 +235,6 @@ def save_daily_workout(user_id: str, day: str, workout_text: str) -> str:
             ).fetchone()
             next_version = version_result[0] if version_result else 1
 
-            # Insert new active routine
             db_conn.execute(
                 sqlalchemy.text("""
                     INSERT INTO workout_routines (user_id, day, workout_text, version, is_active)
@@ -295,9 +277,6 @@ def get_daily_workout(user_id: str, day: str) -> str:
         return error_msg
 
 
-# =============================================
-# ADK TOOLS — Workout Logging (History & PRs)
-# =============================================
 
 def log_completed_workout(user_id: str, exercise: str, sets: int, reps: int, weight_kg: float, rpe: float = None, notes: str = None) -> str:
     """Logs a completed exercise set to the workout history for progress tracking and PR detection.
@@ -327,7 +306,6 @@ def log_completed_workout(user_id: str, exercise: str, sets: int, reps: int, wei
             )
             db_conn.commit()
 
-        # Calculate estimated 1RM from this entry
         est_1rm = weight_kg * (1 + reps / 30)
         return f"✅ Logged: {exercise} — {sets}x{reps} @ {weight_kg}kg (Est. 1RM: {est_1rm:.1f}kg)"
     except Exception as e:
@@ -407,9 +385,6 @@ def get_personal_records(user_id: str) -> str:
         return error_msg
 
 
-# =============================================
-# ADK TOOLS — Readiness Tracking
-# =============================================
 
 def save_readiness_log(user_id: str, sleep_hours: float, soreness_score: int, readiness_score: int, notes: str = None) -> str:
     """Persists a daily readiness assessment for trend tracking and auto-regulation.

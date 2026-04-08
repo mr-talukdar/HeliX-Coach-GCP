@@ -33,12 +33,10 @@ export default function ChatInterface() {
   const [sessionId, setSessionId] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Generate a unique session ID on mount
   useEffect(() => {
     setSessionId(`session-${Date.now()}-${Math.random().toString(36).slice(2)}`);
   }, []);
 
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -52,7 +50,6 @@ export default function ChatInterface() {
     setIsLoading(true);
 
     try {
-      // Send to ADK backend via the /run or /run_sse endpoint
       const userId = user?.uid || "anonymous";
       const response = await fetch(`${API_URL}/api/run`, {
         method: "POST",
@@ -74,10 +71,8 @@ export default function ChatInterface() {
 
       const data = await response.json();
 
-      // Extract agent responses from the ADK response format
       let agentText = "I couldn't process that. Please try again.";
       if (data && data.length > 0) {
-        // ADK returns an array of events; pick the last agent text
         const agentEvents = data.filter(
           (e: any) => e.content?.role === "model" && e.content?.parts
         );
@@ -117,13 +112,11 @@ export default function ChatInterface() {
 
   return (
     <div className="flex flex-col h-full bg-white/[0.02] border border-white/10 rounded-xl overflow-hidden">
-      {/* Chat header */}
       <div className="px-6 py-4 border-b border-white/10 bg-white/[0.01]">
         <h2 className="font-semibold text-white">HeliX Coach Chat</h2>
         <p className="text-sm text-white/50">🟢 Online — Agents Ready</p>
       </div>
 
-      {/* Quick actions */}
       <div className="px-6 py-3 flex gap-2 overflow-x-auto border-b border-white/5 scrollbar-hide">
         {QUICK_ACTIONS.map((action) => (
           <button
@@ -137,7 +130,6 @@ export default function ChatInterface() {
         ))}
       </div>
 
-      {/* Messages area */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
         {messages.map((msg, index) => (
           <div
@@ -183,7 +175,6 @@ export default function ChatInterface() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input area */}
       <div className="p-4 bg-white/[0.01] border-t border-white/10">
         <form onSubmit={handleSend} className="relative">
           <input

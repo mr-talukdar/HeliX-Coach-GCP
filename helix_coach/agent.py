@@ -9,11 +9,7 @@ from .database import (
 )
 
 
-# ==========================================
-# 1. DEFINE TOOLS FOR EACH DOMAIN
-# ==========================================
 
-# --- Lift Performance Analysis Tools ---
 def analyze_progress(current_weight: float, reps: int, target_goal: float) -> str:
     """Calculates the estimated one-repetition maximum (1RM) using the Epley formula
     and assesses progress against a specified target goal.
@@ -29,7 +25,6 @@ def analyze_progress(current_weight: float, reps: int, target_goal: float) -> st
             f"You are {percent_to_goal:.1f}% of the way to your {target_goal}kg goal!")
 
 
-# --- Nutrition Planning Tools ---
 def calculate_macros(
     current_weight: float,
     target_weight: float,
@@ -49,13 +44,11 @@ def calculate_macros(
         height_cm: User's height in centimeters. Defaults to 175.
         sex: 'male' or 'female'. Defaults to 'male'.
     """
-    # Mifflin-St Jeor BMR calculation
     if sex.lower() == "male":
         bmr = (10 * current_weight) + (6.25 * height_cm) - (5 * age) + 5
     else:
         bmr = (10 * current_weight) + (6.25 * height_cm) - (5 * age) - 161
 
-    # Activity multipliers
     multipliers = {
         "sedentary": 1.2,
         "light": 1.375,
@@ -66,11 +59,9 @@ def calculate_macros(
     multiplier = multipliers.get(activity_level.lower(), 1.55)
     tdee = bmr * multiplier
 
-    # Protein: 2.2g per kg of target weight for strength training
     protein = target_weight * 2.2
 
     if target_weight < current_weight:
-        # Cutting: 20% deficit
         calories = int(tdee * 0.80)
         fat = current_weight * 0.8  # 0.8g per kg
         carbs = (calories - (protein * 4) - (fat * 9)) / 4
@@ -82,7 +73,6 @@ def calculate_macros(
             f"Based on TDEE: {tdee:.0f} kcal (BMR: {bmr:.0f}, Activity: {activity_level})"
         )
     elif target_weight > current_weight:
-        # Lean bulking: 10% surplus
         calories = int(tdee * 1.10)
         fat = current_weight * 1.0
         carbs = (calories - (protein * 4) - (fat * 9)) / 4
@@ -94,7 +84,6 @@ def calculate_macros(
             f"Based on TDEE: {tdee:.0f} kcal (BMR: {bmr:.0f}, Activity: {activity_level})"
         )
     else:
-        # Maintenance / recomp
         calories = int(tdee)
         fat = current_weight * 0.9
         carbs = (calories - (protein * 4) - (fat * 9)) / 4
@@ -106,7 +95,6 @@ def calculate_macros(
         )
 
 
-# --- Auto-Regulation Tools ---
 def adapt_workout_for_fatigue(baseline_workout: str, readiness_score: int) -> str:
     """Adjusts the prescribed workout volume and intensity based on the user's daily readiness score.
 
@@ -128,7 +116,6 @@ def adapt_workout_for_fatigue(baseline_workout: str, readiness_score: int) -> st
                 f"from all exercises.\nOriginal was: {baseline_workout}")
 
 
-# --- Readiness Assessment Tools ---
 def assess_readiness(user_id: str, sleep_hours: float, soreness_1_to_10: int) -> str:
     """Calculates a daily readiness score to inform appropriate training intensity and volume.
     Automatically persists the result for trend tracking.
@@ -146,7 +133,6 @@ def assess_readiness(user_id: str, sleep_hours: float, soreness_1_to_10: int) ->
     score -= (soreness_1_to_10 * 5)
     score = max(0, min(100, score))  # Clamp 0-100
 
-    # Persist readiness data for trend tracking
     save_readiness_log(user_id, sleep_hours, soreness_1_to_10, score)
 
     if score > 80:
@@ -157,9 +143,6 @@ def assess_readiness(user_id: str, sleep_hours: float, soreness_1_to_10: int) ->
         return f"Readiness Score: {score}/100. 🔴 High fatigue detected. Recommend an active recovery day or mobility work."
 
 
-# ==========================================
-# 2. DEFINE THE SPECIALIZED SUB-AGENTS
-# ==========================================
 
 lift_specialist = Agent(
     name="lift_specialist",
@@ -267,9 +250,6 @@ workout_logger = Agent(
 )
 
 
-# ==========================================
-# 3. DEFINE THE ROOT ORCHESTRATOR
-# ==========================================
 
 root_agent = Agent(
     name="helix_coach",

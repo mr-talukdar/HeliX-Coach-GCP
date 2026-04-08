@@ -6,7 +6,6 @@ from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -16,12 +15,10 @@ logger = logging.getLogger(__name__)
 logger.info("Booting up HeliX Coach Server...")
 
 try:
-    # 1. Import ADK FastAPI wrapper
     from google.adk.cli.fast_api import get_fast_api_app
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # 2. Create the ADK-managed FastAPI app
     app = get_fast_api_app(agents_dir=current_dir, web=True)
     logger.info("Agent loaded successfully via ADK FastAPI wrapper!")
 
@@ -30,9 +27,6 @@ except Exception as e:
     sys.exit(1)
 
 
-# ==========================================
-# CORS — Allow Next.js frontend to connect
-# ==========================================
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
 
 app.add_middleware(
@@ -44,9 +38,6 @@ app.add_middleware(
 )
 
 
-# ==========================================
-# AUTH ENDPOINTS — Firebase + Calendar OAuth
-# ==========================================
 
 @app.post("/api/auth/verify")
 async def verify_auth(request: Request):
@@ -63,17 +54,14 @@ async def verify_auth(request: Request):
         if not id_token:
             raise HTTPException(status_code=400, detail="Missing idToken")
 
-        # Verify the Firebase token
         user_info = verify_firebase_token(id_token)
         user_id = user_info["uid"]
         email = user_info["email"]
         name = user_info.get("name", "")
 
-        # Check if user exists in our database
         context = get_user_context(user_id)
 
         if "not found" in context.lower():
-            # New user — save basic profile
             save_user_context(user_id, email, name, "")
             return JSONResponse({
                 "status": "new_user",
@@ -129,7 +117,6 @@ async def calendar_oauth_callback(code: str, state: str):
         db_pool = init_pool_and_db()
         store_user_tokens(user_id, tokens, db_pool)
 
-        # Redirect back to frontend with success
         frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
         return RedirectResponse(url=f"{frontend_url}/dashboard?calendar=connected")
 
@@ -167,9 +154,6 @@ async def health_check():
     return JSONResponse({"status": "healthy", "service": "helix-coach"})
 
 
-# ==========================================
-# ENTRY POINT
-# ==========================================
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))

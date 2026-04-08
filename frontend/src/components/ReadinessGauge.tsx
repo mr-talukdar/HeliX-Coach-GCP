@@ -1,5 +1,4 @@
 export default function ReadinessGauge({ score = 85 }: { score?: number }) {
-  // Determine color based on score
   let colorClass = "text-green-500 text-shadow-green";
   let statusText = "Primed for PR";
   
@@ -24,7 +23,6 @@ export default function ReadinessGauge({ score = 85 }: { score?: number }) {
           <p className="text-sm text-white/70 mt-1">{statusText}</p>
         </div>
         
-        {/* Simple visual gauge circle */}
         <div className="relative w-16 h-16 flex items-center justify-center">
           <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
             <path

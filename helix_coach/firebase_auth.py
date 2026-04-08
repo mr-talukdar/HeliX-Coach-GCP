@@ -19,16 +19,12 @@ def _init_firebase():
     if _initialized:
         return
 
-    # In Cloud Run, Application Default Credentials work automatically.
-    # For local dev, set GOOGLE_APPLICATION_CREDENTIALS to a service account key.
     try:
-        # Check if a specific Firebase service account key is provided
         firebase_key = os.environ.get("FIREBASE_SERVICE_ACCOUNT_KEY")
         if firebase_key:
             cred = credentials.Certificate(firebase_key)
             firebase_admin.initialize_app(cred)
         else:
-            # Use Application Default Credentials (works in Cloud Run)
             firebase_admin.initialize_app()
 
         _initialized = True

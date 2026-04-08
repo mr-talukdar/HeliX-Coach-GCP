@@ -14,7 +14,6 @@ def get_calendar_service():
     return build('calendar', 'v3', credentials=credentials)
 
 
-# --- ADK TOOLS ---
 
 def check_todays_schedule(user_id: str, calendar_id: str = 'primary') -> str:
     """Checks the user's Google Calendar for today to find busy times.
@@ -75,7 +74,7 @@ def book_workout_session(user_id: str, start_time_iso: str, end_time_iso: str, w
           },
           'end': {
             'dateTime': end_time_iso,
-            'timeZone': timezone,  # FIXED: was previously mismatched (UTC vs Asia/Kolkata)
+            'timeZone': timezone,
           },
         }
 

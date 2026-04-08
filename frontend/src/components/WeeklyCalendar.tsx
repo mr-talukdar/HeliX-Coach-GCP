@@ -22,7 +22,6 @@ export default function WeeklyCalendar() {
 
   const handleConnectCalendar = () => {
     if (!user) return;
-    // Redirect to the backend OAuth flow, passing the Firebase UID
     window.location.href = `${API_URL}/api/auth/calendar?user_id=${user.uid}`;
   };
 
